@@ -38,7 +38,7 @@ namespace SentOnBehalfBCC
             activeExplorer = this.Application.ActiveExplorer();
             if (activeExplorer != null)
             {
-                // Get the title of the active folder when the Outlook start.
+                // Get the title of the active folder when Outlook starts.
                 Debug.WriteLine("Active explorer: {0}", activeExplorer.Caption);
             }
 
@@ -66,13 +66,21 @@ namespace SentOnBehalfBCC
         }
         private void addComposingEventHandler()
         {
-            activeExplorer.InlineResponse += ActiveExplorer_InlineResponse;
+            //activeExplorer.InlineResponse += ActiveExplorer_InlineResponse;
+            foreach(Outlook.Explorer explorer in Application.Explorers)
+            {
+                explorer.InlineResponse += ActiveExplorer_InlineResponse;
+            }
             inspectors.NewInspector += new Outlook.InspectorsEvents_NewInspectorEventHandler(Inspectors_NewInspector);
             explorers.NewExplorer += new Outlook.ExplorersEvents_NewExplorerEventHandler(Explorers_NewExplorer);
         }
         private void removeComposingEventHandler()
         {
-            activeExplorer.InlineResponse -= ActiveExplorer_InlineResponse;
+            //activeExplorer.InlineResponse -= ActiveExplorer_InlineResponse;
+            foreach (Outlook.Explorer explorer in Application.Explorers)
+            {
+                explorer.InlineResponse -= ActiveExplorer_InlineResponse;
+            }
             inspectors.NewInspector -= Inspectors_NewInspector;
             explorers.NewExplorer -= Explorers_NewExplorer;
         }
@@ -124,6 +132,15 @@ namespace SentOnBehalfBCC
                 Debug.WriteLine(smtpAddress);
                 if (smtpAddress.Equals(config.MailText, StringComparison.InvariantCultureIgnoreCase))
                 {
+                    //var rec = Globals.ThisAddIn.Application.Session.CreateRecipient(smtpAddress);
+                    //var distGroup = recipient.AddressEntry.GetExchangeDistributionList();
+                    //var user = recipient.AddressEntry.GetExchangeUser();
+                    //var contact = recipient.AddressEntry.GetContact();
+                    //var members = distGroup.GetExchangeDistributionListMembers();
+                    //foreach(Outlook.AddressEntry entry in members)
+                    //{
+                    //    Debug.WriteLine(entry.GetSmtpAddress());
+                    //}
                     Debug.WriteLine("BCC and SentOnBehalf");
                     recipient.Type = (int)Outlook.OlMailRecipientType.olBCC;
                     mailItem.Sender = recipient.AddressEntry;
@@ -134,7 +151,8 @@ namespace SentOnBehalfBCC
         }
         private void Explorers_NewExplorer(Outlook.Explorer explorer)
         {
-            System.Windows.Forms.MessageBox.Show("Explorers_NewExplorer");
+            Debug.WriteLine("Explorers_NewExplorer");
+            explorer.InlineResponse += ActiveExplorer_InlineResponse;
         }
 
         private void ThisAddIn_Shutdown(object sender, System.EventArgs e)

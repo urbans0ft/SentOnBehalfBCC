@@ -13,7 +13,6 @@ namespace SentOnBehalfBCC
     {
         private void MyRibbon_Load(object sender, RibbonUIEventArgs e)
         {
-            var culture = System.Globalization.CultureInfo.CurrentCulture;
             this.EnableToggle.Image =
                 Properties.Settings.Default.AddInEnabled ?
                     Properties.Resources.toggle_on_solid :
